@@ -50,55 +50,64 @@ class _MyAppState extends State<MyApp> {
   var _questionIndex = 0;
   int i = 0;
 
+  final questions = const [
+    // creation of a MAP (key : value)
+    {
+      'questionText': 'x + 2 = 5 ?',
+      'answers': [3, 2, 4, 1]
+      // first element list = pos 0
+    },
+    {
+      'questionText': '2x - 5 = 1 ?',
+      'answers': [4, 3, 1, 3]
+    },
+    {
+      'questionText': '3 + x = 7 ?',
+      'answers': [1, 2, 4, 3]
+    },
+  ];
+
   void _answerQuestion() {
     setState(() {
       _questionIndex = _questionIndex + 1;
     });
-    print(_questionIndex);
+
+    if (_questionIndex < questions.length) {
+      print("We have more questions !");
+    } else {
+      print("No more questions !");
+    }
   }
 
   @override // It already exists but we override with our own method --> To make the code more clear
   Widget build(BuildContext context) {
-    var questions = [
-      // creation of a MAP (key : value)
-      {
-        'questionText': 'x + 2 = 5 ?',
-        'answers': [i, i+1, i+2, i-3]
-        // first element list = pos 0
-      },
-     {
-        'questionText': '2x - 5 = 1 ?',
-        'answers': [ 4, 3, 1, 3]
-      },
-      {
-        'questionText': '3 + x = 7 ?',
-        'answers': [1, 2, 4, 3]
-      },
-    ];
-
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: Text('MixMath'),
         ),
-        body: Column(
-          children: [
-            Question(
-              questions[_questionIndex]['questionText'] as String,
-            ),
-            ...(questions[_questionIndex]['answers'] as List<int>)  // "..."  take a list and pull all the values in that list out of them and add it in a surrounding as individual values
-                .map((answer) {
-              return Answer(_answerQuestion, answer);
-            }).toList(),
+        body: _questionIndex < questions.length       //if
+            ? Column(
+                children: [
+                  Question(
+                    questions[_questionIndex]['questionText'] as String,
+                  ),
+                  ...(questions[_questionIndex]['answers'] as List<
+                          int>) // "..."  take a list and pull all the values in that list out of them and add it in a surrounding as individual values
+                      .map((answer) {
+                    return Answer(_answerQuestion, answer);
+                  }).toList(),
 
-            /*
+                  /*
             Answer(_answerQuestion),
             Answer(_answerQuestion),
             Answer(_answerQuestion),
              */
-
-          ],
-        ),
+                ],
+              )
+            : Center(                         //else
+                child: Text("you did it !"),
+              ),
       ),
     );
   }
