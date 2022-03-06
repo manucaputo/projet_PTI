@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import './question.dart';
 import './answer.dart';
+import './quiz.dart';
+import './result.dart';
 
 // TESTS
 /*
@@ -48,67 +50,84 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   var _questionIndex = 0;
-  int i = 0;
+  var _totalScore = 0;
 
-  final questions = const [
+  void _resetQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
+  }
+
+  final _questions = const [
     // creation of a MAP (key : value)
     {
       'questionText': 'x + 2 = 5 ?',
-      'answers': [3, 2, 4, 1]
+      'answers': [
+        {'text': '3', 'score': 1},
+        {'text': '2', 'score': 0},
+        {'text': '4', 'score': 0},
+        {'text': '1', 'score': 0}
+      ]
       // first element list = pos 0
     },
     {
       'questionText': '2x - 5 = 1 ?',
-      'answers': [4, 3, 1, 3]
+      'answers': [
+        {'text': '4', 'score': 0},
+        {'text': '3', 'score': 1},
+        {'text': '1', 'score': 0},
+        {'text': '2', 'score': 0}
+      ]
     },
     {
       'questionText': '3 + x = 7 ?',
-      'answers': [1, 2, 4, 3]
+      'answers': [
+        {'text': '1', 'score': 0},
+        {'text': '2', 'score': 0},
+        {'text': '4', 'score': 1},
+        {'text': '3', 'score': 0}
+      ]
     },
   ];
 
-  void _answerQuestion() {
+  void _answerQuestion(int score) {
+    _totalScore = _totalScore + score;
+
     setState(() {
       _questionIndex = _questionIndex + 1;
     });
 
-    if (_questionIndex < questions.length) {
+    if (_questionIndex < _questions.length) {
       print("We have more questions !");
     } else {
       print("No more questions !");
     }
   }
 
+  /*@override
+  void _resetQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
+  }
+
+   */
+
   @override // It already exists but we override with our own method --> To make the code more clear
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('MixMath'),
-        ),
-        body: _questionIndex < questions.length       //if
-            ? Column(
-                children: [
-                  Question(
-                    questions[_questionIndex]['questionText'] as String,
-                  ),
-                  ...(questions[_questionIndex]['answers'] as List<
-                          int>) // "..."  take a list and pull all the values in that list out of them and add it in a surrounding as individual values
-                      .map((answer) {
-                    return Answer(_answerQuestion, answer);
-                  }).toList(),
-
-                  /*
-            Answer(_answerQuestion),
-            Answer(_answerQuestion),
-            Answer(_answerQuestion),
-             */
-                ],
-              )
-            : Center(                         //else
-                child: Text("you did it !"),
-              ),
+        home: Scaffold(
+      appBar: AppBar(
+        title: Text('MixMath'),
       ),
-    );
+      body: _questionIndex < _questions.length //if
+          ? Quiz(
+              answerQuestion: _answerQuestion,
+              questionIndex: _questionIndex,
+              questions: _questions)
+          : Result(_totalScore, _resetQuiz),
+    ));
   }
 }
